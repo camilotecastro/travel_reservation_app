@@ -44,4 +44,10 @@ public class Reservation implements Serializable {
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
+  @Override
+  public String toString() {
+    return String.format("Reservation[id=%s, dateStart=%s, dateEnd=%s, price=%s]",
+        id, dateStart, dateEnd, price);
+  }
+
 }

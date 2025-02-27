@@ -1,7 +1,7 @@
 package com.example.best_travel.util;
 
 public enum AeroLine {
-  aero_gol,
+  aero_gold,
   avianca,
   blue_sky,
   latam_airlines,

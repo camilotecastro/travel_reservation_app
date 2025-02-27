@@ -37,5 +37,10 @@ public class Ticket {
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
+  @Override
+  public String toString() {
+    return String.format("Ticket[id=%s, departure=%s, arrival=%s, price=%s]",
+        id, departureDate, arrivalDate, price);
+  }
 
 }

@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Builder
@@ -41,6 +42,7 @@ public class Fly implements Serializable {
   @Enumerated(EnumType.STRING)
   private AeroLine aeroLine;
 
+  @ToString.Exclude
   @OneToMany(mappedBy = "fly", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<Ticket> tickets;
 

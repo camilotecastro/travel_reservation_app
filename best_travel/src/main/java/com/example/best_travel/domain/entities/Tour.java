@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Builder
 @AllArgsConstructor
@@ -27,12 +28,19 @@ public class Tour {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @ToString.Exclude
   @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<Reservation> reservations;
+  @ToString.Exclude
   @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<Ticket> tickets;
   @ManyToOne
   @JoinColumn(name = "id_customer")
   private Customer customer;
+
+  @Override
+  public String toString() {
+    return String.format("Tour[id=%d, customer=%s]", id, customer);
+  }
 
 }

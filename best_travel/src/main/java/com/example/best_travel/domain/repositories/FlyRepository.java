@@ -1,8 +1,8 @@
 package com.example.best_travel.domain.repositories;
 
 import com.example.best_travel.domain.entities.Fly;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface FlyRepository extends JpaRepository<Fly, Long> {
+public interface FlyRepository extends CrudRepository<Fly, Long> {
 
 }
