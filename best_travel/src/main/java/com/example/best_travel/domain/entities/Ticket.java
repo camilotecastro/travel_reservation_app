@@ -10,8 +10,12 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,27 +24,27 @@ import lombok.NoArgsConstructor;
 public class Ticket {
 
   @Id
+  @EqualsAndHashCode.Include
   private UUID id;
   private LocalDate departureDate;
   private LocalDate arrivalDate;
   private LocalDate purchaseDate;
   private BigDecimal price;
 
+  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "fly_id")
   private Fly fly;
+
+  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "tour_id")
   private Tour tour;
 
+  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
-  @Override
-  public String toString() {
-    return String.format("Ticket[id=%s, departure=%s, arrival=%s, price=%s]",
-        id, departureDate, arrivalDate, price);
-  }
 
 }

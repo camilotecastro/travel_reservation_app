@@ -17,9 +17,11 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@EqualsAndHashCode(exclude = "tickets")
 @Data
 @Builder
 @AllArgsConstructor
@@ -42,9 +44,10 @@ public class Fly implements Serializable {
   @Enumerated(EnumType.STRING)
   private AeroLine aeroLine;
 
+  @OneToMany(mappedBy = "fly", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
   @ToString.Exclude
-  @OneToMany(mappedBy = "fly", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
   private Set<Ticket> tickets;
+
 
   @Override
   public String toString() {

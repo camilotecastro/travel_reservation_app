@@ -13,8 +13,11 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@EqualsAndHashCode
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Reservation implements Serializable {
 
+  @EqualsAndHashCode.Include
   @Id
   private UUID id;
 
@@ -32,14 +36,17 @@ public class Reservation implements Serializable {
   private Integer totalDays;
   private BigDecimal price;
 
+  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "hotel_id")
   private Hotel hotel;
 
+  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "tour_id")
   private Tour tour;
 
+  @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "customer_id")
   private Customer customer;
@@ -49,5 +56,7 @@ public class Reservation implements Serializable {
     return String.format("Reservation[id=%s, dateStart=%s, dateEnd=%s, price=%s]",
         id, dateStart, dateEnd, price);
   }
+
+
 
 }

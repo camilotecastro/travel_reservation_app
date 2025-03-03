@@ -8,13 +8,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,6 +26,7 @@ import lombok.ToString;
 @Entity
 public class Hotel {
 
+  @EqualsAndHashCode.Include
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -33,8 +38,9 @@ public class Hotel {
   private Double price;
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-  private Set<Reservation> reservations;
+  @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+  private List<Reservation> reservations = new ArrayList<>();
+
 
 
   @Override
