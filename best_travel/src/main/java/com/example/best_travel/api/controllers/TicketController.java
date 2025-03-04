@@ -6,9 +6,11 @@ import com.example.best_travel.domain.infrastucture.abstractservices.ITicketServ
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +30,18 @@ public class TicketController {
   @GetMapping("/{id}")
   public ResponseEntity<TicketResponse> getTicket(@PathVariable UUID id) {
     return ResponseEntity.ok(this.ticketService.read(id));
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<TicketResponse> putTicket(@PathVariable UUID id,
+      @RequestBody TicketRequest ticketRequest) {
+    return ResponseEntity.ok(this.ticketService.update(id, ticketRequest));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteTicket(@PathVariable UUID id) {
+    this.ticketService.delete(id);
+    return ResponseEntity.noContent().build();
   }
 
 }
