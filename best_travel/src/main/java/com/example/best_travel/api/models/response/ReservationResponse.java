@@ -11,21 +11,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @Data
-public class TicketResponse implements Serializable {
+@Builder
+public class ReservationResponse implements Serializable {
 
   private UUID id;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+  private LocalDateTime dateTimeReservation;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-  private LocalDate departureDate;
+  private LocalDate dateStart;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-  private LocalDate arrivalDate;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-  private LocalDate purchaseDate;
+  private LocalDate dateEnd;
+  private Integer totalDays;
   private BigDecimal price;
-  private FlyResponse flyResponse;
-
+  private HotelResponse hotel;
 
 }
