@@ -47,7 +47,7 @@ public class Tour {
   private Set<Ticket> tickets;
 
   @ToString.Exclude
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_customer")
   private Customer customer;
 
