@@ -5,9 +5,9 @@ import com.example.best_travel.domain.entities.Fly;
 import com.example.best_travel.domain.infrastucture.abstractservices.IFlyService;
 import com.example.best_travel.domain.repositories.FlyRepository;
 import com.example.best_travel.util.SortTypeEnum;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -27,8 +27,11 @@ public class FlyService implements IFlyService {
   private final FlyRepository flyRepository;
 
   @Override
-  public List<FlyResponse> readByOriginDestiny(String origin, String destiny) {
-    return List.of();
+  public Set<FlyResponse> readByOriginDestiny(String origin, String destiny) {
+    return this.flyRepository.selectOriginDestiny(origin, destiny)
+        .stream()
+        .map(this::entityToResponse)
+        .collect(Collectors.toSet());
   }
 
   @Override
@@ -37,21 +40,27 @@ public class FlyService implements IFlyService {
 
     switch (sortType) {
       case NONE -> pageRequest = PageRequest.of(page, size);
-      case LOWER -> pageRequest = PageRequest.of(page, size, Sort.by(FIELD_BY_SORT).ascending());
-      case UPPER -> pageRequest = PageRequest.of(page, size, Sort.by(FIELD_BY_SORT).descending());
+      case LOWER -> pageRequest = PageRequest.of(page, size, Sort.by(PRICE).ascending());
+      case UPPER -> pageRequest = PageRequest.of(page, size, Sort.by(PRICE).descending());
     }
 
     return this.flyRepository.findAll(pageRequest).map(this::entityToResponse);
   }
 
   @Override
-  public List<FlyResponse> readLessPrice(BigDecimal price) {
-    return List.of();
+  public Set<FlyResponse> readLessPrice(BigDecimal price) {
+    return this.flyRepository.selectLessPrice(price)
+        .stream()
+        .map(this::entityToResponse)
+        .collect(Collectors.toSet());
   }
 
   @Override
-  public List<FlyResponse> readBeetwenPrice(BigDecimal min, BigDecimal max) {
-    return List.of();
+  public Set<FlyResponse> readBeetwenPrice(BigDecimal min, BigDecimal max) {
+    return this.flyRepository.selectBetweenPrice(min, max)
+        .stream()
+        .map(this::entityToResponse)
+        .collect(Collectors.toSet());
   }
 
   private FlyResponse entityToResponse(Fly fly) {
@@ -59,4 +68,5 @@ public class FlyService implements IFlyService {
     BeanUtils.copyProperties(fly, response);
     return response;
   }
+
 }

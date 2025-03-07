@@ -3,7 +3,9 @@ package com.example.best_travel.api.controllers;
 import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.domain.infrastucture.abstractservices.IFlyService;
 import com.example.best_travel.util.SortTypeEnum;
+import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +37,23 @@ public class FlyController {
     return pageResponse.isEmpty() ? ResponseEntity.noContent().build() :
         ResponseEntity.ok(pageResponse);
 
+  }
+
+  @GetMapping(path = "/less-price")
+  public ResponseEntity<Set<FlyResponse>> getBestPrice(@RequestParam BigDecimal price) {
+    return ResponseEntity.ok(flyService.readLessPrice(price));
+  }
+
+  @GetMapping(path = "/between-price")
+  public ResponseEntity<Set<FlyResponse>> getBetweenPrince(@RequestParam BigDecimal min,
+      @RequestParam BigDecimal max) {
+    return ResponseEntity.ok(flyService.readBeetwenPrice(min, max));
+  }
+
+  @GetMapping(path = "/origin-destiny")
+  public ResponseEntity<Set<FlyResponse>> getOriginDestiny(@RequestParam String origin,
+      @RequestParam String destiny) {
+    return ResponseEntity.ok(flyService.readByOriginDestiny(origin, destiny));
   }
 
 
