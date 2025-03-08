@@ -12,7 +12,7 @@ public interface CatalogService<R> {
 
   Set<R> readLessPrice(BigDecimal price);
 
-  Set<R> readBeetwenPrice(BigDecimal min, BigDecimal max);
+  Set<R> readBetweenPrice(BigDecimal min, BigDecimal max);
 
   String PRICE = "price";
 
