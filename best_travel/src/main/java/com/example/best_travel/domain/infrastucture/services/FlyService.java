@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Slf4j
-@Transactional
+@Transactional(readOnly = true)
 @Service
 @AllArgsConstructor
 public class FlyService implements IFlyService {

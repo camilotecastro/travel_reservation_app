@@ -5,12 +5,12 @@ import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.api.models.response.TicketResponse;
 import com.example.best_travel.domain.entities.Ticket;
 import com.example.best_travel.domain.infrastucture.abstractservices.ITicketService;
+import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
 import com.example.best_travel.domain.repositories.FlyRepository;
 import com.example.best_travel.domain.repositories.TicketRepository;
 import com.example.best_travel.util.BestTravelUtil;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class TicketService implements ITicketService {
 
-  private static final BigDecimal CHARGER_PRICE_PERCENTAGE = BigDecimal.valueOf(0.25);
+  public static final BigDecimal CHARGER_PRICE_PERCENTAGE = BigDecimal.valueOf(0.25);
 
   private final FlyRepository flyRepository;
   private final CustomerRepository customerRepository;
   private final TicketRepository ticketRepository;
+  private final CustomerHelper customerHelper;
 
   @Override
   public TicketResponse create(TicketRequest request) {
@@ -47,6 +48,8 @@ public class TicketService implements ITicketService {
         .build();
 
     var ticketPersisted = this.ticketRepository.save(ticketToPersist);
+
+    this.customerHelper.increment(customer.getDni(), TourService.class);
 
     log.info("Ticket persisted with id: {}", ticketPersisted.getId());
 

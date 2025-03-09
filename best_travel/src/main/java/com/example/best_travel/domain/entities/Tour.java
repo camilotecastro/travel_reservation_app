@@ -12,10 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
-import jakarta.persistence.PreUpdate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -51,34 +48,42 @@ public class Tour {
   @JoinColumn(name = "id_customer")
   private Customer customer;
 
-  @Override
-  public String toString() {
-    return String.format("Tour[id=%d, customer=%s]", id, customer);
+  @PrePersist
+  @PreRemove
+  public void updateTickets() {
+    this.tickets.forEach(ticket -> ticket.setTour(this));
+    this.reservations.forEach(reservation -> reservation.setTour(this));
+  }
+
+  public void removeTicket(UUID id) {
+    this.tickets.removeIf(ticket -> ticket.getId().equals(id));
+  }
+
+  public void removeReservation(UUID id) {
+    this.reservations.removeIf(reservation -> reservation.getId().equals(id));
   }
 
   public void addTicket(Ticket ticket) {
     if (Objects.isNull(this.tickets)) {
       this.tickets = new HashSet<>();
     }
-    tickets.add(ticket);
-  }
-
-  public void removeTicket(UUID ticketId) {
-    this.tickets.removeIf(ticket -> ticket.getId().equals(ticketId));
-  }
-
-/*  @PreRemove
-  @PreUpdate
-  @PrePersist*/
-  public void updateTickets() {
-    this.tickets.forEach(ticket -> ticket.setTour(this));
+    this.tickets.add(ticket);
+    this.tickets.forEach(t -> ticket.setTour(this));
   }
 
   public void addReservation(Reservation reservation) {
     if (Objects.isNull(this.reservations)) {
       this.reservations = new HashSet<>();
     }
-    reservations.add(reservation);
+    this.reservations.add(reservation);
+    this.reservations.forEach(r -> reservation.setTour(this));
   }
+
+
+  @Override
+  public String toString() {
+    return String.format("Tour[id=%d, customer=%s]", id, customer);
+  }
+
 
 }

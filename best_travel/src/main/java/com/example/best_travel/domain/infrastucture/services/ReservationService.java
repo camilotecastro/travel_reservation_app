@@ -5,6 +5,7 @@ import com.example.best_travel.api.models.response.HotelResponse;
 import com.example.best_travel.api.models.response.ReservationResponse;
 import com.example.best_travel.domain.entities.Reservation;
 import com.example.best_travel.domain.infrastucture.abstractservices.IReservationService;
+import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
 import com.example.best_travel.domain.repositories.HotelRepository;
 import com.example.best_travel.domain.repositories.ReservationRepository;
@@ -24,11 +25,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReservationService implements IReservationService {
 
-  private static final double CHARGES_PRICE_PERCENTAGE = 0.20;
+  public static final double CHARGES_PRICE_PERCENTAGE = 0.20;
 
   private final ReservationRepository reservationRepository;
   private final HotelRepository hotelRepository;
   private final CustomerRepository customerRepository;
+  private final CustomerHelper customerHelper;
 
   @Override
   public ReservationResponse create(ReservationRequest request) {
@@ -47,6 +49,8 @@ public class ReservationService implements IReservationService {
         .build();
 
     var reservationPersisted = this.reservationRepository.save(reservationToPersist);
+
+    this.customerHelper.increment(customer.getDni(), ReservationService.class);
 
     return this.entityToResponse(reservationPersisted);
   }

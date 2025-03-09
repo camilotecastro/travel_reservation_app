@@ -1,8 +1,6 @@
 package com.example.best_travel.domain.infrastucture.services;
 
-import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.api.models.response.HotelResponse;
-import com.example.best_travel.domain.entities.Hotel;
 import com.example.best_travel.domain.infrastucture.abstractservices.IHotelService;
 import com.example.best_travel.domain.repositories.HotelRepository;
 import com.example.best_travel.util.SortTypeEnum;
@@ -10,7 +8,6 @@ import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
-@Transactional
+@Transactional(readOnly = true)
 @AllArgsConstructor
 @Service
 public class HotelService implements IHotelService {
