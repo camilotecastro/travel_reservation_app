@@ -1,8 +1,14 @@
 package com.example.best_travel.api.controllers;
 
 import com.example.best_travel.api.models.request.ReservationRequest;
+import com.example.best_travel.api.models.response.ErrorsResponse;
 import com.example.best_travel.api.models.response.ReservationResponse;
 import com.example.best_travel.domain.infrastucture.abstractservices.IReservationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -26,34 +32,46 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 @RestController
 @RequestMapping(path = "/reservation")
+@Tag(name = "Reservation", description = "Reservation API")
 public class ReservationController {
 
   private final IReservationService reservationService;
 
 
+  @Operation(summary = "Get a reservation by id")
   @GetMapping("/{id}")
   public ResponseEntity<ReservationResponse> getReservation(@PathVariable UUID id) {
     return ResponseEntity.ok(reservationService.read(id));
   }
 
+  @Operation(summary = "Get the price of a reservation")
   @GetMapping
-  public ResponseEntity<Map<String, BigDecimal>> getTicket(@RequestParam Long reservationId) {
+  public ResponseEntity<Map<String, BigDecimal>> getReservationPrice(
+      @RequestParam Long reservationId) {
     return ResponseEntity.ok(
         Collections.singletonMap("ticketPrice", reservationService.findPrice(reservationId)));
   }
 
+  @ApiResponse(responseCode = "400",
+      description = "Invalid reservation data",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ErrorsResponse.class))
+  )
+  @Operation(summary = "Create a new reservation")
   @PostMapping
   public ResponseEntity<ReservationResponse> postReservation(
       @Valid @RequestBody ReservationRequest reservationRequest) {
     return ResponseEntity.ok(reservationService.create(reservationRequest));
   }
 
+  @Operation(summary = "Update a reservation")
   @PutMapping("/{id}")
   public ResponseEntity<ReservationResponse> putReservation(@PathVariable UUID id,
       @Valid @RequestBody ReservationRequest reservationRequest) {
     return ResponseEntity.ok(reservationService.update(id, reservationRequest));
   }
 
+  @Operation(summary = "Delete a reservation")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteReservation(@PathVariable UUID id) {
     reservationService.delete(id);
