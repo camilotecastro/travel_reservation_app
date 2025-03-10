@@ -3,6 +3,7 @@ package com.example.best_travel.api.controllers;
 import com.example.best_travel.api.models.request.TourRequest;
 import com.example.best_travel.api.models.response.TourResponse;
 import com.example.best_travel.domain.infrastucture.services.TourService;
+import jakarta.validation.Valid;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class TourController {
   private final TourService tourService;
 
   @PostMapping()
-  public ResponseEntity<TourResponse> createTour(@RequestBody TourRequest tourRequest) {
+  public ResponseEntity<TourResponse> createTour(@Valid @RequestBody TourRequest tourRequest) {
     return ResponseEntity.ok(tourService.create(tourRequest));
   }
 

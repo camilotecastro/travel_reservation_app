@@ -2,14 +2,12 @@ package com.example.best_travel.api.controllers;
 
 import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.domain.infrastucture.abstractservices.IFlyService;
-import com.example.best_travel.util.SortTypeEnum;
+import com.example.best_travel.util.enums.SortTypeEnum;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

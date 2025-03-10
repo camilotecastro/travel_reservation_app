@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Helper class for Customer entity to increment the total of tours, flights and lodgings.
+ */
 @Transactional
 @Component
 @AllArgsConstructor

@@ -5,10 +5,12 @@ import com.example.best_travel.api.models.response.HotelResponse;
 import com.example.best_travel.api.models.response.ReservationResponse;
 import com.example.best_travel.domain.entities.Reservation;
 import com.example.best_travel.domain.infrastucture.abstractservices.IReservationService;
+import com.example.best_travel.domain.infrastucture.helpers.BlackListHelper;
 import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
 import com.example.best_travel.domain.repositories.HotelRepository;
 import com.example.best_travel.domain.repositories.ReservationRepository;
+import com.example.best_travel.util.exceptions.IdNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,18 +33,20 @@ public class ReservationService implements IReservationService {
   private final HotelRepository hotelRepository;
   private final CustomerRepository customerRepository;
   private final CustomerHelper customerHelper;
+  private final BlackListHelper blackListHelper;
 
   @Override
   public ReservationResponse create(ReservationRequest request) {
-    var hotel = hotelRepository.findById(request.getIdHotel()).orElseThrow();
-    var customer = customerRepository.findById(request.getIdClient()).orElseThrow();
 
-    var reservationToPersist = Reservation.builder()
-        .id(UUID.randomUUID())
-        .hotel(hotel)
-        .customer(customer)
-        .totalDays(request.getTotalDays())
-        .dateStart(LocalDate.now())
+    blackListHelper.isInBlackList(request.getIdClient());
+
+    var hotel = hotelRepository.findById(request.getIdHotel())
+        .orElseThrow(() -> new IdNotFoundException("Hotel"));
+    var customer = customerRepository.findById(request.getIdClient())
+        .orElseThrow(() -> new IdNotFoundException("Customer"));
+
+    var reservationToPersist = Reservation.builder().id(UUID.randomUUID()).hotel(hotel)
+        .customer(customer).totalDays(request.getTotalDays()).dateStart(LocalDate.now())
         .dateTimeReservation(LocalDateTime.now())
         .dateEnd(LocalDate.now().plusDays(request.getTotalDays()))
         .price(BigDecimal.valueOf(hotel.getPrice() + (hotel.getPrice() * CHARGES_PRICE_PERCENTAGE)))
@@ -58,16 +62,22 @@ public class ReservationService implements IReservationService {
 
   @Override
   public ReservationResponse read(UUID uuid) {
-    var reservation = this.reservationRepository.findById(uuid).orElseThrow();
+    var reservation = this.reservationRepository.findById(uuid)
+        .orElseThrow(() -> new IdNotFoundException("Reservation"));
     return this.entityToResponse(reservation);
   }
 
   @Override
   public ReservationResponse update(UUID uuid, ReservationRequest request) {
-    var customer = customerRepository.findById(request.getIdClient()).orElseThrow();
-    var hotel = hotelRepository.findById(request.getIdHotel()).orElseThrow();
+    var customer = customerRepository.findById(request.getIdClient())
+        .orElseThrow(() -> new IdNotFoundException("Customer"));
 
-    var reservationToUpdate = this.reservationRepository.findById(uuid).orElseThrow();
+    var hotel = hotelRepository.findById(request.getIdHotel())
+        .orElseThrow(() -> new IdNotFoundException("Hotel"));
+
+    var reservationToUpdate = this.reservationRepository.findById(uuid)
+        .orElseThrow(() -> new IdNotFoundException("Reservation"));
+
     reservationToUpdate.setHotel(hotel);
     reservationToUpdate.setDateTimeReservation(LocalDateTime.now());
     // Not update customer.
@@ -75,7 +85,8 @@ public class ReservationService implements IReservationService {
     reservationToUpdate.setTotalDays(request.getTotalDays());
     reservationToUpdate.setDateStart(LocalDate.now());
     reservationToUpdate.setDateEnd(LocalDate.now().plusDays(request.getTotalDays()));
-    reservationToUpdate.setPrice(BigDecimal.valueOf(hotel.getPrice() + (hotel.getPrice() * CHARGES_PRICE_PERCENTAGE)));
+    reservationToUpdate.setPrice(
+        BigDecimal.valueOf(hotel.getPrice() + (hotel.getPrice() * CHARGES_PRICE_PERCENTAGE)));
 
     log.info("Updating reservation {}", reservationToUpdate.getId());
 
@@ -86,13 +97,15 @@ public class ReservationService implements IReservationService {
 
   @Override
   public void delete(UUID uuid) {
-    var reservation = this.reservationRepository.findById(uuid).orElseThrow();
+    var reservation = this.reservationRepository.findById(uuid)
+        .orElseThrow(() -> new IdNotFoundException("Reservation"));
     this.reservationRepository.delete(reservation);
   }
 
   @Override
   public BigDecimal findPrice(Long hotelId) {
-    var hotel = hotelRepository.findById(hotelId).orElseThrow();
+    var hotel = hotelRepository.findById(hotelId)
+        .orElseThrow(() -> new IdNotFoundException("Hotel"));
     return BigDecimal.valueOf(hotel.getPrice() + (hotel.getPrice() * CHARGES_PRICE_PERCENTAGE));
   }
 

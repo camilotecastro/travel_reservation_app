@@ -1,6 +1,6 @@
 package com.example.best_travel.api.models.response;
 
-import com.example.best_travel.util.AeroLine;
+import com.example.best_travel.util.enums.AeroLine;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;

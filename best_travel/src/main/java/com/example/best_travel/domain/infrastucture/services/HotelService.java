@@ -3,7 +3,7 @@ package com.example.best_travel.domain.infrastucture.services;
 import com.example.best_travel.api.models.response.HotelResponse;
 import com.example.best_travel.domain.infrastucture.abstractservices.IHotelService;
 import com.example.best_travel.domain.repositories.HotelRepository;
-import com.example.best_travel.util.SortTypeEnum;
+import com.example.best_travel.util.enums.SortTypeEnum;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;

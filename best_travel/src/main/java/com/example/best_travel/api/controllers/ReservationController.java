@@ -2,8 +2,8 @@ package com.example.best_travel.api.controllers;
 
 import com.example.best_travel.api.models.request.ReservationRequest;
 import com.example.best_travel.api.models.response.ReservationResponse;
-import com.example.best_travel.api.models.response.TicketResponse;
 import com.example.best_travel.domain.infrastucture.abstractservices.IReservationService;
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @Slf4j
 @AllArgsConstructor
@@ -43,13 +44,13 @@ public class ReservationController {
 
   @PostMapping
   public ResponseEntity<ReservationResponse> postReservation(
-      @RequestBody ReservationRequest reservationRequest) {
+      @Valid @RequestBody ReservationRequest reservationRequest) {
     return ResponseEntity.ok(reservationService.create(reservationRequest));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<ReservationResponse> putReservation(@PathVariable UUID id,
-      @RequestBody ReservationRequest reservationRequest) {
+      @Valid @RequestBody ReservationRequest reservationRequest) {
     return ResponseEntity.ok(reservationService.update(id, reservationRequest));
   }
 

@@ -4,7 +4,7 @@ import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.domain.entities.Fly;
 import com.example.best_travel.domain.infrastucture.abstractservices.IFlyService;
 import com.example.best_travel.domain.repositories.FlyRepository;
-import com.example.best_travel.util.SortTypeEnum;
+import com.example.best_travel.util.enums.SortTypeEnum;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;

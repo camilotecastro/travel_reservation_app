@@ -1,6 +1,6 @@
 package com.example.best_travel.domain.entities;
 
-import com.example.best_travel.util.AeroLine;
+import com.example.best_travel.util.enums.AeroLine;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
