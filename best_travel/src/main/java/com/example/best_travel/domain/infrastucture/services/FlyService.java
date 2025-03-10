@@ -8,21 +8,28 @@ import com.example.best_travel.util.enums.SortTypeEnum;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 
 @Transactional(readOnly = true)
 @Service
-@AllArgsConstructor
 public class FlyService implements IFlyService {
 
   private final FlyRepository flyRepository;
+  private final WebClient webClient;
+
+  public FlyService(FlyRepository flyRepository,
+      @Qualifier(value = "generic") WebClient webClient) {
+    this.flyRepository = flyRepository;
+    this.webClient = webClient;
+  }
 
   @Override
   public Set<FlyResponse> readByOriginDestiny(String origin, String destiny) {

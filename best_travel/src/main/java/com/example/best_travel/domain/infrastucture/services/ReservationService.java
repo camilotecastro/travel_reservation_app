@@ -5,6 +5,7 @@ import com.example.best_travel.api.models.response.HotelResponse;
 import com.example.best_travel.api.models.response.ReservationResponse;
 import com.example.best_travel.domain.entities.Reservation;
 import com.example.best_travel.domain.infrastucture.abstractservices.IReservationService;
+import com.example.best_travel.domain.infrastucture.helpers.ApiCurrencyConnectorHelper;
 import com.example.best_travel.domain.infrastucture.helpers.BlackListHelper;
 import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
@@ -14,6 +15,7 @@ import com.example.best_travel.util.exceptions.IdNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Currency;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,7 @@ public class ReservationService implements IReservationService {
   private final CustomerRepository customerRepository;
   private final CustomerHelper customerHelper;
   private final BlackListHelper blackListHelper;
+  private final ApiCurrencyConnectorHelper apiCurrencyConnectorHelper;
 
   @Override
   public ReservationResponse create(ReservationRequest request) {
@@ -103,10 +106,20 @@ public class ReservationService implements IReservationService {
   }
 
   @Override
-  public BigDecimal findPrice(Long hotelId) {
+  public BigDecimal findPrice(Long hotelId, Currency currency) {
     var hotel = hotelRepository.findById(hotelId)
         .orElseThrow(() -> new IdNotFoundException("Hotel"));
-    return BigDecimal.valueOf(hotel.getPrice() + (hotel.getPrice() * CHARGES_PRICE_PERCENTAGE));
+
+    var priceInDollars = hotel.getPrice() + (hotel.getPrice() * CHARGES_PRICE_PERCENTAGE);
+
+    if (currency.equals(Currency.getInstance("USD"))) {
+      return BigDecimal.valueOf(priceInDollars);
+    }
+
+    var currencyDTO = apiCurrencyConnectorHelper.getCurrency(currency);
+    log.info("Currency DTO: {}", currencyDTO);
+
+    return currencyDTO.getRates().get(currency).multiply(BigDecimal.valueOf(priceInDollars));
   }
 
   private ReservationResponse entityToResponse(Reservation entity) {

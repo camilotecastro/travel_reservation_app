@@ -5,6 +5,7 @@ import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.api.models.response.TicketResponse;
 import com.example.best_travel.domain.entities.Ticket;
 import com.example.best_travel.domain.infrastucture.abstractservices.ITicketService;
+import com.example.best_travel.domain.infrastucture.helpers.ApiCurrencyConnectorHelper;
 import com.example.best_travel.domain.infrastucture.helpers.BlackListHelper;
 import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
@@ -14,6 +15,7 @@ import com.example.best_travel.util.BestTravelUtil;
 import com.example.best_travel.util.enums.Tables;
 import com.example.best_travel.util.exceptions.IdNotFoundException;
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ public class TicketService implements ITicketService {
   private final TicketRepository ticketRepository;
   private final CustomerHelper customerHelper;
   private final BlackListHelper blackListHelper;
+  private final ApiCurrencyConnectorHelper apiCurrencyConnectorHelper;
 
   @Override
   public TicketResponse create(TicketRequest request) {
@@ -42,10 +45,9 @@ public class TicketService implements ITicketService {
 
     var fly = flyRepository.findById(request.getIdFly()).orElseThrow(
         () -> new IdNotFoundException(Tables.fly.name()));
-    ;
+
     var customer = customerRepository.findById(request.getIdClient()).orElseThrow(
         () -> new IdNotFoundException(Tables.customer.name()));
-    ;
 
     var ticketToPersist = Ticket.builder()
         .id(UUID.randomUUID())
@@ -99,10 +101,21 @@ public class TicketService implements ITicketService {
   }
 
   @Override
-  public BigDecimal findPrice(Long flyId) {
+  public BigDecimal findPrice(Long flyId, Currency currency) {
     var fly = this.flyRepository.findById(flyId).orElseThrow(
         () -> new IdNotFoundException(Tables.fly.name()));
-    return fly.getPrice().add(fly.getPrice().multiply(CHARGER_PRICE_PERCENTAGE));
+
+    var priceInDollars = fly.getPrice().add(fly.getPrice().multiply(CHARGER_PRICE_PERCENTAGE));
+
+    if (currency.equals(Currency.getInstance("USD"))) {
+      return priceInDollars;
+    }
+
+    var currencyDTO = apiCurrencyConnectorHelper.getCurrency(currency);
+    log.info("Currency: {}", currencyDTO);
+
+    return priceInDollars.multiply(currencyDTO.getRates().get(currency));
+
   }
 
   private TicketResponse entityToResponse(Ticket ticket) {

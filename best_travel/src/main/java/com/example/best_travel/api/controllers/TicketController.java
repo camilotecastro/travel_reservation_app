@@ -12,7 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,9 +57,16 @@ public class TicketController {
 
   @Operation(summary = "Get the price of a ticket")
   @GetMapping()
-  public ResponseEntity<Map<String, BigDecimal>> getFlyPrice(@RequestParam Long flyId) {
+  public ResponseEntity<Map<String, BigDecimal>> getFlyPrice(
+      @RequestParam Long flyId,
+      @RequestHeader(required = false) Currency currency) {
+
+    if (Objects.isNull(currency)) {
+      currency = Currency.getInstance("USD");
+    }
+
     return ResponseEntity.ok(
-        Collections.singletonMap("flyPrice", this.ticketService.findPrice(flyId)));
+        Collections.singletonMap("flyPrice", this.ticketService.findPrice(flyId, currency)));
   }
 
   @Operation(summary = "Update a ticket")

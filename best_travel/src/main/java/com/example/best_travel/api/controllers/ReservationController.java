@@ -12,7 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,9 +50,15 @@ public class ReservationController {
   @Operation(summary = "Get the price of a reservation")
   @GetMapping
   public ResponseEntity<Map<String, BigDecimal>> getReservationPrice(
-      @RequestParam Long reservationId) {
+      @RequestParam Long hotelId,
+      @RequestHeader(required = false) Currency currency) {
+
+    if (Objects.isNull(currency)) {
+      currency = Currency.getInstance("USD");
+    }
+
     return ResponseEntity.ok(
-        Collections.singletonMap("ticketPrice", reservationService.findPrice(reservationId)));
+        Collections.singletonMap("ticketPrice", reservationService.findPrice(hotelId, currency)));
   }
 
   @ApiResponse(responseCode = "400",
