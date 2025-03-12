@@ -1,5 +1,7 @@
 package com.example.best_travel.domain.infrastucture.services;
 
+import static java.util.Objects.nonNull;
+
 import com.example.best_travel.api.models.request.TourRequest;
 import com.example.best_travel.api.models.response.TourResponse;
 import com.example.best_travel.domain.entities.Fly;
@@ -10,6 +12,7 @@ import com.example.best_travel.domain.entities.Tour;
 import com.example.best_travel.domain.infrastucture.abstractservices.ITourService;
 import com.example.best_travel.domain.infrastucture.helpers.BlackListHelper;
 import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
+import com.example.best_travel.domain.infrastucture.helpers.MailHelper;
 import com.example.best_travel.domain.infrastucture.helpers.TourHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
 import com.example.best_travel.domain.repositories.FlyRepository;
@@ -37,6 +40,7 @@ public class TourService implements ITourService {
   private final TourHelper tourHelper;
   private final CustomerHelper customerHelper;
   private final BlackListHelper blackListHelper;
+  private final MailHelper emailHelper;
 
   @Override
   public TourResponse create(TourRequest request) {
@@ -47,10 +51,9 @@ public class TourService implements ITourService {
         () -> new IdNotFoundException(Tables.customer.name()));
 
     var flights = new HashSet<Fly>();
-    request.getFlights().forEach(flight -> {
-      flights.add(this.flyRepository.findById(flight.getId()).orElseThrow(
-          () -> new IdNotFoundException(Tables.fly.name())));
-    });
+    request.getFlights().forEach(flight ->
+        flights.add(this.flyRepository.findById(flight.getId())
+            .orElseThrow(() -> new IdNotFoundException(Tables.fly.name()))));
 
     var hotels = new HashMap<Hotel, Integer>();
     request.getHotels().forEach(hotel -> {
@@ -68,6 +71,10 @@ public class TourService implements ITourService {
 
     this.customerHelper.increment(customer.getDni(), TourService.class);
 
+    if (nonNull(request.getEmail())) {
+      emailHelper.sendEmail(request.getEmail(), customer.getFullName(), Tables.tour.name());
+    }
+
     return TourResponse.builder()
         .id(tourPersisted.getId())
         .reservationIds(tourPersisted.getReservations().stream().map(Reservation::getId).collect(
@@ -75,6 +82,7 @@ public class TourService implements ITourService {
         .ticketIds(
             tourPersisted.getTickets().stream().map(Ticket::getId).collect(Collectors.toSet()))
         .build();
+
   }
 
   @Override

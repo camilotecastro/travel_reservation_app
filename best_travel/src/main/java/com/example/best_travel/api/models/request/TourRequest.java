@@ -1,5 +1,6 @@
 package com.example.best_travel.api.models.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,10 @@ public class TourRequest implements Serializable {
   @Size(min = 1, message = "The hotels must have at least one element")
   @NotNull
   private Set<TourHotelRequest> hotels;
+
+  //@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "The email is not valid")
+  @Email(message = "The email is not valid")
+  private String email;
 
 
 }

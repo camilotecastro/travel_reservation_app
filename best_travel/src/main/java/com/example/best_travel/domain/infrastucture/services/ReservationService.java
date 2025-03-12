@@ -1,5 +1,7 @@
 package com.example.best_travel.domain.infrastucture.services;
 
+import static java.util.Objects.nonNull;
+
 import com.example.best_travel.api.models.request.ReservationRequest;
 import com.example.best_travel.api.models.response.HotelResponse;
 import com.example.best_travel.api.models.response.ReservationResponse;
@@ -8,9 +10,11 @@ import com.example.best_travel.domain.infrastucture.abstractservices.IReservatio
 import com.example.best_travel.domain.infrastucture.helpers.ApiCurrencyConnectorHelper;
 import com.example.best_travel.domain.infrastucture.helpers.BlackListHelper;
 import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
+import com.example.best_travel.domain.infrastucture.helpers.MailHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
 import com.example.best_travel.domain.repositories.HotelRepository;
 import com.example.best_travel.domain.repositories.ReservationRepository;
+import com.example.best_travel.util.enums.Tables;
 import com.example.best_travel.util.exceptions.IdNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,6 +41,7 @@ public class ReservationService implements IReservationService {
   private final CustomerHelper customerHelper;
   private final BlackListHelper blackListHelper;
   private final ApiCurrencyConnectorHelper apiCurrencyConnectorHelper;
+  private final MailHelper emailHelper;
 
   @Override
   public ReservationResponse create(ReservationRequest request) {
@@ -58,6 +63,10 @@ public class ReservationService implements IReservationService {
     var reservationPersisted = this.reservationRepository.save(reservationToPersist);
 
     this.customerHelper.increment(customer.getDni(), ReservationService.class);
+
+    if (nonNull(request.getEmail())) {
+      emailHelper.sendEmail(request.getEmail(), customer.getFullName(), Tables.reservation.name());
+    }
 
     return this.entityToResponse(reservationPersisted);
   }

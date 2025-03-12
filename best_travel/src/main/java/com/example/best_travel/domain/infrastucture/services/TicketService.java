@@ -1,5 +1,7 @@
 package com.example.best_travel.domain.infrastucture.services;
 
+import static java.util.Objects.nonNull;
+
 import com.example.best_travel.api.models.request.TicketRequest;
 import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.api.models.response.TicketResponse;
@@ -8,6 +10,7 @@ import com.example.best_travel.domain.infrastucture.abstractservices.ITicketServ
 import com.example.best_travel.domain.infrastucture.helpers.ApiCurrencyConnectorHelper;
 import com.example.best_travel.domain.infrastucture.helpers.BlackListHelper;
 import com.example.best_travel.domain.infrastucture.helpers.CustomerHelper;
+import com.example.best_travel.domain.infrastucture.helpers.MailHelper;
 import com.example.best_travel.domain.repositories.CustomerRepository;
 import com.example.best_travel.domain.repositories.FlyRepository;
 import com.example.best_travel.domain.repositories.TicketRepository;
@@ -38,6 +41,7 @@ public class TicketService implements ITicketService {
   private final CustomerHelper customerHelper;
   private final BlackListHelper blackListHelper;
   private final ApiCurrencyConnectorHelper apiCurrencyConnectorHelper;
+  private final MailHelper emailHelper;
 
   @Override
   public TicketResponse create(TicketRequest request) {
@@ -64,6 +68,10 @@ public class TicketService implements ITicketService {
     this.customerHelper.increment(customer.getDni(), TourService.class);
 
     log.info("Ticket persisted with id: {}", ticketPersisted.getId());
+
+    if (nonNull(request.getEmail())) {
+      emailHelper.sendEmail(request.getEmail(), customer.getFullName(), Tables.ticket.name());
+    }
 
     return this.entityToResponse(ticketPersisted);
   }
