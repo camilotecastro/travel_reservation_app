@@ -4,12 +4,14 @@ import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.domain.entities.Fly;
 import com.example.best_travel.domain.infrastucture.abstractservices.IFlyService;
 import com.example.best_travel.domain.repositories.FlyRepository;
+import com.example.best_travel.util.constants.CacheConstants;
 import com.example.best_travel.util.enums.SortTypeEnum;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,6 +34,7 @@ public class FlyService implements IFlyService {
   }
 
   @Override
+  @Cacheable(value = CacheConstants.FLY_CACHE_NAME)
   public Set<FlyResponse> readByOriginDestiny(String origin, String destiny) {
     return this.flyRepository.selectOriginDestiny(origin, destiny)
         .stream()
@@ -40,6 +43,7 @@ public class FlyService implements IFlyService {
   }
 
   @Override
+  @Cacheable(value = CacheConstants.FLY_CACHE_NAME)
   public Page<FlyResponse> readAll(Integer page, Integer size, SortTypeEnum sortType) {
     PageRequest pageRequest = null;
 
@@ -53,6 +57,7 @@ public class FlyService implements IFlyService {
   }
 
   @Override
+  @Cacheable(value = CacheConstants.FLY_CACHE_NAME)
   public Set<FlyResponse> readLessPrice(BigDecimal price) {
     return this.flyRepository.selectLessPrice(price)
         .stream()
@@ -61,7 +66,13 @@ public class FlyService implements IFlyService {
   }
 
   @Override
+  @Cacheable(value = CacheConstants.FLY_CACHE_NAME)
   public Set<FlyResponse> readBetweenPrice(BigDecimal min, BigDecimal max) {
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
     return this.flyRepository.selectBetweenPrice(min, max)
         .stream()
         .map(this::entityToResponse)

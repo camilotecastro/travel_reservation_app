@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   db:
     image: postgres:15.2
     container_name: best_travel
@@ -15,3 +14,11 @@ services:
       - POSTGRES_PASSWORD=admin
     ports:
       - "5433:5432"
+
+  cache:
+    image: redis:6.2-alpine
+    container_name: best_travel_cache
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --loglevel warning --requirepass best_travel
