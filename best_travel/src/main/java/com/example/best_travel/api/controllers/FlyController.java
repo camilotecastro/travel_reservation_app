@@ -2,6 +2,7 @@ package com.example.best_travel.api.controllers;
 
 import com.example.best_travel.api.models.response.FlyResponse;
 import com.example.best_travel.domain.infrastucture.abstractservices.IFlyService;
+import com.example.best_travel.util.annotations.Notify;
 import com.example.best_travel.util.enums.SortTypeEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,6 +30,7 @@ public class FlyController {
 
   @Operation(summary = "Get all flies")
   @GetMapping
+  @Notify
   public ResponseEntity<Page<FlyResponse>> getFlies(@RequestParam Integer page, @RequestParam
   Integer size, @RequestHeader(required = false) SortTypeEnum sortType) {
     if (Objects.isNull(sortType)) {
